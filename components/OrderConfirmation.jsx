@@ -86,13 +86,31 @@ function PulseRings() {
   )
 }
 
+async function scheduleOrderNotification(restaurantName) {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return
+
+  let permission = Notification.permission
+  if (permission === 'default') {
+    permission = await Notification.requestPermission()
+  }
+  if (permission !== 'granted') return
+
+  const reg = await navigator.serviceWorker.ready
+  reg.active?.postMessage({
+    type: 'SCHEDULE_ORDER_NOTIFICATION',
+    delay: 60_000,
+    restaurantName,
+  })
+}
+
 export default function OrderConfirmation({ restaurantName, onDone }) {
   const timerRef = useRef(null)
 
   useEffect(() => {
     timerRef.current = setTimeout(onDone, 5000)
+    scheduleOrderNotification(restaurantName)
     return () => clearTimeout(timerRef.current)
-  }, [onDone])
+  }, [onDone, restaurantName])
 
   return (
     <motion.div

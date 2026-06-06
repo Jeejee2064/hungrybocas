@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useCallback } from 'react'
 import { useCartStore } from '@/lib/cart-store'
+import { useOrderStore } from '@/lib/order-store'
 import OrderModal from './OrderModal'
 import OrderConfirmation from './OrderConfirmation'
 
@@ -16,6 +17,8 @@ export default function CartSheet() {
   const decrementItem = useCartStore((s) => s.decrementItem)
   const clearCart = useCartStore((s) => s.clearCart)
 
+  const placeOrder = useOrderStore((s) => s.placeOrder)
+
   // Computed values as inline selectors — avoids getSnapshot loop
   const subtotal = useCartStore((s) => s.items.reduce((sum, i) => sum + i.price * i.qty, 0))
   const total = useCartStore((s) => s.items.reduce((sum, i) => sum + i.price * i.qty, 0) + s.deliveryFee)
@@ -23,10 +26,18 @@ export default function CartSheet() {
   const [showOrder, setShowOrder] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
-  const handleOrderSuccess = useCallback(() => {
+  const handleOrderSuccess = useCallback((customerData) => {
+    const state = useCartStore.getState()
+    placeOrder({
+      restaurantName: state.restaurantName,
+      restaurantId: state.restaurantId,
+      items: state.items,
+      total: state.items.reduce((s, i) => s + i.price * i.qty, 0) + state.deliveryFee,
+      customer: customerData,
+    })
     setShowOrder(false)
     setShowConfirmation(true)
-  }, [])
+  }, [placeOrder])
 
   const handleConfirmationDone = useCallback(() => {
     setShowConfirmation(false)

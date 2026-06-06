@@ -4,6 +4,7 @@ import FloatingCartButton from './FloatingCartButton'
 import CartSheet from './CartSheet'
 import PageTransition from './PageTransition'
 import PWAInstallBanner from './PWAInstallBanner'
+import ActiveOrderCard from './ActiveOrderCard'
 
 export default function ClientLayout({ children }) {
   return (
@@ -16,6 +17,7 @@ export default function ClientLayout({ children }) {
       </main>
       <FloatingCartButton />
       <CartSheet />
+      <ActiveOrderCard />
       <PWAInstallBanner />
     </div>
   )
