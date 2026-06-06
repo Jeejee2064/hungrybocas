@@ -54,88 +54,100 @@ export default function ActiveOrderCard() {
   const activeOrder = useOrderStore((s) => s.activeOrder)
   const clearOrder = useOrderStore((s) => s.clearOrder)
   const [status, setStatus] = useState(null)
-  const [visible, setVisible] = useState(true)
+  const [expanded, setExpanded] = useState(true)
 
   useEffect(() => {
     if (!activeOrder) return
-
     const update = () => setStatus(computeStatus(activeOrder.placedAt))
     update()
-
     const interval = setInterval(update, 15_000)
     return () => clearInterval(interval)
   }, [activeOrder])
 
-  // Auto-dismiss 30 s after delivery
+  // Re-expand card when status changes so user notices the update
+  useEffect(() => {
+    if (status) setExpanded(true)
+  }, [status?.key])
+
+  // Auto-clear 30 s after delivery
   useEffect(() => {
     if (status?.key !== 'delivered') return
-    const t = setTimeout(() => {
-      setVisible(false)
-      setTimeout(clearOrder, 400)
-    }, 30_000)
+    const t = setTimeout(clearOrder, 30_000)
     return () => clearTimeout(t)
   }, [status, clearOrder])
 
-  if (!activeOrder || !status || !visible) return null
+  if (!activeOrder || !status) return null
 
   const isDelivered = status.key === 'delivered'
+  const bg = isDelivered
+    ? 'linear-gradient(135deg, #065F46, #059669)'
+    : 'linear-gradient(135deg, #1e1b4b, #2d2a6e)'
 
   return (
-    <AnimatePresence>
-      <motion.div
-        key="active-order"
-        initial={{ y: 80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 80, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed bottom-24 left-4 right-4 z-40 md:left-auto md:right-6 md:bottom-8 md:w-80"
-      >
-        <div
-          className="rounded-2xl px-4 py-3.5 text-white"
-          style={{
-            background: isDelivered
-              ? 'linear-gradient(135deg, #065F46, #059669)'
-              : 'linear-gradient(135deg, #1e1b4b, #2d2a6e)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.22)',
-          }}
+    <AnimatePresence mode="wait">
+      {expanded ? (
+        /* ── Full card ── */
+        <motion.div
+          key="card"
+          initial={{ y: 80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 80, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+          className="fixed bottom-24 left-4 right-4 z-40 md:left-auto md:right-6 md:bottom-8 md:w-80"
         >
-          {/* Header row */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xl shrink-0">{status.emoji}</span>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  Active order · {activeOrder.restaurantName}
-                </p>
-                <p className="text-sm font-bold mt-0.5 leading-snug">{status.label}</p>
+          <div className="rounded-2xl px-4 py-3.5 text-white" style={{ background: bg, boxShadow: '0 8px 32px rgba(0,0,0,0.22)' }}>
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xl shrink-0">{status.emoji}</span>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                    Active order · {activeOrder.restaurantName}
+                  </p>
+                  <p className="text-sm font-bold mt-0.5 leading-snug">{status.label}</p>
+                </div>
               </div>
+
+              <button
+                onClick={() => isDelivered ? clearOrder() : setExpanded(false)}
+                className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5"
+                style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)' }}
+                aria-label={isDelivered ? 'Dismiss' : 'Minimize'}
+              >
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
 
-            <button
-              onClick={() => {
-                setVisible(false)
-                if (isDelivered) setTimeout(clearOrder, 400)
-              }}
-              className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5"
-              style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)' }}
-              aria-label="Dismiss"
-            >
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+            <p className="text-xs mt-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              {activeOrder.items.map((i) => `${i.qty}× ${i.name}`).join(', ')} · ${activeOrder.total.toFixed(2)}
+            </p>
+
+            <StepDots currentKey={status.key} />
+            <ProgressBar placedAt={activeOrder.placedAt} />
           </div>
-
-          {/* Items summary */}
-          <p className="text-xs mt-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            {activeOrder.items.map((i) => `${i.qty}× ${i.name}`).join(', ')} · ${activeOrder.total.toFixed(2)}
-          </p>
-
-          {/* Progress */}
-          <StepDots currentKey={status.key} />
-          <ProgressBar placedAt={activeOrder.placedAt} />
-        </div>
-      </motion.div>
+        </motion.div>
+      ) : (
+        /* ── Minimised pill ── */
+        <motion.button
+          key="pill"
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 40, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+          onClick={() => setExpanded(true)}
+          className="fixed bottom-24 right-4 z-40 md:right-6 md:bottom-8 flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-sm font-semibold"
+          style={{ background: bg, boxShadow: '0 4px 20px rgba(0,0,0,0.22)' }}
+        >
+          <motion.span
+            animate={{ scale: [1, 1.25, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+          >
+            {status.emoji}
+          </motion.span>
+          {status.label}
+        </motion.button>
+      )}
     </AnimatePresence>
   )
 }

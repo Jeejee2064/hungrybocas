@@ -6,6 +6,7 @@ import CartSheet from './CartSheet'
 import PageTransition from './PageTransition'
 import PWAInstallBanner from './PWAInstallBanner'
 import ActiveOrderCard from './ActiveOrderCard'
+import OrderNotificationToast from './OrderNotificationToast'
 
 export default function ClientLayout({ children }) {
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function ClientLayout({ children }) {
       <FloatingCartButton />
       <CartSheet />
       <ActiveOrderCard />
+      <OrderNotificationToast />
       <PWAInstallBanner />
     </div>
   )

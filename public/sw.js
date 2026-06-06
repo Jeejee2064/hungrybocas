@@ -28,25 +28,6 @@ self.addEventListener('fetch', (e) => {
   )
 })
 
-// Scheduled order notification
-self.addEventListener('message', (e) => {
-  if (e.data?.type !== 'SCHEDULE_ORDER_NOTIFICATION') return
-
-  const { delay, restaurantName } = e.data
-
-  setTimeout(() => {
-    self.registration.showNotification('🛵 Your order is on its way!', {
-      body: `${restaurantName} is preparing your order — it'll be with you shortly.`,
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
-      tag: 'order-update',
-      renotify: true,
-      vibrate: [200, 100, 200, 100, 400],
-      data: { url: '/' },
-    })
-  }, delay)
-})
-
 self.addEventListener('notificationclick', (e) => {
   e.notification.close()
   e.waitUntil(

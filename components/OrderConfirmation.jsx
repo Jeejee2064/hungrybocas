@@ -89,18 +89,37 @@ function PulseRings() {
 async function scheduleOrderNotification(restaurantName) {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return
 
+  // Wait for the ¡Listo! animation before showing the permission dialog
+  await new Promise((r) => setTimeout(r, 1500))
+
   let permission = Notification.permission
   if (permission === 'default') {
     permission = await Notification.requestPermission()
   }
   if (permission !== 'granted') return
 
+  // Use registration.showNotification() from the page — far more reliable
+  // than postMessage→SW setTimeout (browser kills idle SWs before 60 s)
   const reg = await navigator.serviceWorker.ready
-  reg.active?.postMessage({
-    type: 'SCHEDULE_ORDER_NOTIFICATION',
-    delay: 60_000,
-    restaurantName,
-  })
+  setTimeout(() => {
+    if (document.hidden) {
+      // App in background → OS notification
+      reg.showNotification('🛵 Your order is on its way!', {
+        body: `${restaurantName} is preparing your order — it'll be with you shortly.`,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag: 'order-update',
+        renotify: true,
+        vibrate: [200, 100, 200, 100, 400],
+        data: { url: '/' },
+      })
+    } else {
+      // App in foreground → in-app toast
+      window.dispatchEvent(
+        new CustomEvent('bocas-order-notification', { detail: { restaurantName } })
+      )
+    }
+  }, 60_000)
 }
 
 export default function OrderConfirmation({ restaurantName, onDone }) {

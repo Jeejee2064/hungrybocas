@@ -105,19 +105,6 @@ export default function MapPicker({ onLocationChange }) {
       mapRef.current = map
       markerRef.current = marker
       emit(BOCAS_CENTER[0], BOCAS_CENTER[1])
-
-      // Try GPS silently on mount
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          ({ coords: { latitude: lat, longitude: lng } }) => {
-            map.setView([lat, lng], 16)
-            marker.setLatLng([lat, lng])
-            emit(lat, lng)
-          },
-          () => {},
-          { enableHighAccuracy: true, timeout: 6000 }
-        )
-      }
     })
 
     return () => {
