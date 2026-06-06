@@ -28,7 +28,7 @@ export default function LocationPicker({ onLocationChange, error }) {
       (pos) => {
         const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude }
         setGpsLoc(loc)
-        setMode('gps')
+        setMode('map') // go straight to map, pre-centred on GPS location
         setLoading(false)
         onLocationChange(loc)
       },
@@ -89,14 +89,29 @@ export default function LocationPicker({ onLocationChange, error }) {
             <span>⚠</span> {gpsError}
           </motion.p>
         )}
-        <SwitchButton
-          emoji={loading ? '⌛' : '📡'}
-          label={loading ? 'Detecting…' : 'Use my location instead'}
-          disabled={loading}
-          onClick={handleGPS}
-        />
+
+        {gpsLoc ? (
+          /* Came from GPS — show badge + option to go back to choice */
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: '#16a34a' }}>
+              <span>📡</span> GPS location — adjust pin if needed
+            </span>
+            <button onClick={resetToChoice} className="text-xs underline" style={{ color: '#9CA3AF' }}>
+              Change
+            </button>
+          </div>
+        ) : (
+          /* Manual map — offer GPS shortcut */
+          <SwitchButton
+            emoji={loading ? '⌛' : '📡'}
+            label={loading ? 'Detecting…' : 'Use my location instead'}
+            disabled={loading}
+            onClick={handleGPS}
+          />
+        )}
+
         <div className="flex-1" style={{ minHeight: 240 }}>
-          <MapPicker onLocationChange={handleMapChange} />
+          <MapPicker onLocationChange={handleMapChange} initialLocation={gpsLoc} />
         </div>
       </div>
     )

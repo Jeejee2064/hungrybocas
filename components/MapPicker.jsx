@@ -29,12 +29,14 @@ function Spinner() {
   )
 }
 
-export default function MapPicker({ onLocationChange }) {
+export default function MapPicker({ onLocationChange, initialLocation }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
   const markerRef = useRef(null)
   const callbackRef = useRef(onLocationChange)
   callbackRef.current = onLocationChange
+  // Capture initial location at mount — not reactive (map only inits once)
+  const initialRef = useRef(initialLocation)
 
   const [loadingGPS, setLoadingGPS] = useState(false)
   const [gpsError, setGpsError] = useState(false)
@@ -74,9 +76,13 @@ export default function MapPicker({ onLocationChange }) {
         iconAnchor: [16, 44],
       })
 
+      const init = initialRef.current
+      const center = init ? [init.lat, init.lng] : BOCAS_CENTER
+      const zoom = init ? 17 : 14
+
       const map = L.map(containerRef.current, {
-        center: BOCAS_CENTER,
-        zoom: 14,
+        center,
+        zoom,
         zoomControl: true,
         attributionControl: false,
       })
@@ -87,7 +93,7 @@ export default function MapPicker({ onLocationChange }) {
 
       L.control.attribution({ position: 'bottomleft', prefix: '© OpenStreetMap' }).addTo(map)
 
-      const marker = L.marker(BOCAS_CENTER, { icon: pinIcon, draggable: true }).addTo(map)
+      const marker = L.marker(center, { icon: pinIcon, draggable: true }).addTo(map)
 
       const emit = (lat, lng) => callbackRef.current({ lat, lng })
 
@@ -104,7 +110,7 @@ export default function MapPicker({ onLocationChange }) {
 
       mapRef.current = map
       markerRef.current = marker
-      emit(BOCAS_CENTER[0], BOCAS_CENTER[1])
+      emit(center[0], center[1])
     })
 
     return () => {
