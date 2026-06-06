@@ -1,0 +1,25 @@
+export default function manifest() {
+  return {
+    name: 'Bocas Delivery',
+    short_name: 'Bocas',
+    description: 'Order food in Bocas del Toro, Panama',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#FAFAF8',
+    theme_color: '#1e1b4b',
+    icons: [
+      {
+        src: '/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any maskable',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any maskable',
+      },
+    ],
+  }
+}

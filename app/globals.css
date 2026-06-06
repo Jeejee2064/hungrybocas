@@ -1,26 +1,84 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-background: #FAFAF8;
+  --color-navy: #1e1b4b;
+  --color-coral: #fa5d66;
+  --color-coral-dark: #e44f58;
+  --color-yellow: #FFD93D;
+  --font-sans: var(--font-poppins);
+  --font-display: var(--font-playfair);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.07);
+  --shadow-float: 0 8px 32px rgba(0, 0, 0, 0.16);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FAFAF8;
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+input, textarea {
+  font-family: inherit;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Phone Input overrides ── */
+.phone-input-container { width: 100% !important; }
+
+.phone-input-container .phone-input-field {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  border: 1.5px solid transparent !important;
+  background-color: #F9FAFB !important;
+  font-family: var(--font-poppins), sans-serif !important;
+  font-size: 14px !important;
+  color: #111827 !important;
+  padding-left: 54px !important;
+  outline: none !important;
+  transition: border-color 0.15s ease;
+}
+.phone-input-container .phone-input-field:focus {
+  border-color: #fa5d66 !important;
+}
+.phone-input-container .phone-input-field.phone-input-error {
+  border-color: #EF4444 !important;
+}
+.phone-input-container .phone-input-flag {
+  background-color: #F9FAFB !important;
+  border: 1.5px solid transparent !important;
+  border-right: none !important;
+  border-radius: 12px 0 0 12px !important;
+}
+.phone-input-container .phone-input-flag:hover,
+.phone-input-container .phone-input-flag.open {
+  background-color: #F3F4F6 !important;
+  border-radius: 12px 0 0 12px !important;
+}
+.phone-input-dropdown {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid #F3F4F6 !important;
+  overflow: hidden !important;
+  font-family: var(--font-poppins), sans-serif !important;
+  font-size: 13px !important;
+}
+.phone-input-dropdown .country:hover { background-color: #FEF2F3 !important; }
+.phone-input-dropdown .country.highlight { background-color: #fde8e9 !important; }
