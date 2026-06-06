@@ -82,3 +82,7 @@ input, textarea {
 }
 .phone-input-dropdown .country:hover { background-color: #FEF2F3 !important; }
 .phone-input-dropdown .country.highlight { background-color: #fde8e9 !important; }
+.phone-input-dropdown .search { padding: 8px 8px 4px !important; position: sticky; top: 0; background: white; z-index: 1; }
+.phone-input-dropdown .search-box { width: 100% !important; margin: 0 !important; }
+/* Let the country list scroll independently on mobile */
+.phone-input-dropdown { overscroll-behavior: contain !important; -webkit-overflow-scrolling: touch !important; touch-action: pan-y !important; }

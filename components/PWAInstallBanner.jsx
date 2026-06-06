@@ -9,11 +9,6 @@ export default function PWAInstallBanner() {
   const [isIOS, setIsIOS] = useState(false)
 
   useEffect(() => {
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {})
-    }
-
     // Already installed — nothing to show
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||

@@ -1,16 +1,9 @@
 'use client'
 import { motion } from 'framer-motion'
-import { useState, useCallback, useRef } from 'react'
-import dynamic from 'next/dynamic'
+import { useState, useRef } from 'react'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
-
-const MapPicker = dynamic(() => import('./MapPicker'), {
-  ssr: false,
-  loading: () => (
-    <div className="rounded-2xl animate-pulse w-full h-full" style={{ minHeight: 240, backgroundColor: '#F3F4F6' }} />
-  ),
-})
+import LocationPicker from './LocationPicker'
 
 function Field({ label, error, children }) {
   return (
@@ -48,20 +41,22 @@ export default function OrderModal({ restaurantName, onClose, onSuccess }) {
 
   const nameRef = useRef(null)
   const phoneContainerRef = useRef(null)
-  const mapSectionRef = useRef(null)
-  const scrollAreaRef = useRef(null)
+  const locationSectionRef = useRef(null)
 
-  const handleLocationChange = useCallback((loc) => setLocation(loc), [])
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
-
   const focusBorder = (e) => { e.target.style.borderColor = '#fa5d66' }
   const blurBorder = (hasError) => (e) => { e.target.style.borderColor = hasError ? '#EF4444' : 'transparent' }
+
+  const handleLocationChange = (loc) => {
+    setLocation(loc)
+    if (loc) setErrors((e) => ({ ...e, map: undefined }))
+  }
 
   const handleSubmit = () => {
     const e = {}
     if (!form.name.trim()) e.name = 'Please enter your name'
     if (!form.phone || form.phone.length < 5) e.phone = 'Please enter your phone number'
-    if (!location) e.map = 'Please pin your delivery location on the map'
+    if (!location) e.map = 'Please choose or pin your delivery location'
     setErrors(e)
 
     if (Object.keys(e).length === 0) {
@@ -69,17 +64,15 @@ export default function OrderModal({ restaurantName, onClose, onSuccess }) {
       return
     }
 
-    // Scroll to & focus first error field
     setTimeout(() => {
       if (e.name && nameRef.current) {
         nameRef.current.focus()
         nameRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
       } else if (e.phone && phoneContainerRef.current) {
-        const input = phoneContainerRef.current.querySelector('input')
-        input?.focus()
-        input?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      } else if (e.map && mapSectionRef.current) {
-        mapSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        phoneContainerRef.current.querySelector('input')?.focus()
+        phoneContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      } else if (e.map && locationSectionRef.current) {
+        locationSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }, 50)
   }
@@ -136,8 +129,8 @@ export default function OrderModal({ restaurantName, onClose, onSuccess }) {
           </button>
         </div>
 
-        {/* Body — stacked on mobile, 2-col on desktop */}
-        <div ref={scrollAreaRef} className="overflow-y-auto flex-1 px-6 pb-6">
+        {/* Body */}
+        <div className="overflow-y-auto flex-1 px-6 pb-6">
           <div className="flex flex-col md:flex-row md:gap-6">
 
             {/* ── Left: form fields ── */}
@@ -166,6 +159,18 @@ export default function OrderModal({ restaurantName, onClose, onSuccess }) {
                     inputClass={`phone-input-field${errors.phone ? ' phone-input-error' : ''}`}
                     buttonClass="phone-input-flag"
                     dropdownClass="phone-input-dropdown"
+                    enableSearch
+                    searchPlaceholder="Search country…"
+                    searchStyle={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1.5px solid #E5E7EB',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      outline: 'none',
+                      fontFamily: 'inherit',
+                    }}
+                    disableSearchIcon
                   />
                 </div>
               </Field>
@@ -194,34 +199,17 @@ export default function OrderModal({ restaurantName, onClose, onSuccess }) {
               </motion.button>
             </div>
 
-            {/* ── Right: map ── */}
-            <div ref={mapSectionRef} className="flex-1 flex flex-col gap-1.5 mt-4 md:mt-0">
+            {/* ── Right: location picker ── */}
+            <div ref={locationSectionRef} className="flex-1 flex flex-col gap-1.5 mt-4 md:mt-0">
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide">
                 Delivery Location
               </label>
-              <div
-                className="flex-1 rounded-2xl overflow-hidden"
-                style={{
-                  minHeight: 240,
-                  border: errors.map ? '2px solid #EF4444' : '2px solid transparent',
-                  transition: 'border-color 0.15s ease',
-                }}
-              >
-                <MapPicker onLocationChange={handleLocationChange} />
+              <div className="flex-1">
+                <LocationPicker
+                  onLocationChange={handleLocationChange}
+                  error={errors.map}
+                />
               </div>
-              {location ? (
-                <p className="text-xs text-gray-400 text-center">
-                  📍 {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
-                </p>
-              ) : errors.map ? (
-                <motion.p
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs text-red-500 flex items-center gap-1"
-                >
-                  <span>⚠</span> {errors.map}
-                </motion.p>
-              ) : null}
             </div>
           </div>
 
