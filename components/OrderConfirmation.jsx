@@ -86,10 +86,12 @@ function PulseRings() {
   )
 }
 
+const NOTIF_DELAY = 60_000
+
 async function scheduleOrderNotification(restaurantName) {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return
 
-  // Wait for the ¡Listo! animation before showing the permission dialog
+  // Let the ¡Listo! animation play before the permission dialog appears
   await new Promise((r) => setTimeout(r, 1500))
 
   let permission = Notification.permission
@@ -98,28 +100,30 @@ async function scheduleOrderNotification(restaurantName) {
   }
   if (permission !== 'granted') return
 
-  // Use registration.showNotification() from the page — far more reliable
-  // than postMessage→SW setTimeout (browser kills idle SWs before 60 s)
   const reg = await navigator.serviceWorker.ready
+
+  const notifPayload = {
+    title: '🛵 Your order is on its way!',
+    body: `${restaurantName} is preparing your order — it'll be with you shortly.`,
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: 'order-update',  // same tag → browser deduplicates if both fire
+    renotify: true,
+    vibrate: [200, 100, 200, 100, 400],
+    data: { url: '/' },
+  }
+
+  // ① Page-side timer — fires when app stays in foreground (most reliable path)
   setTimeout(() => {
-    if (document.hidden) {
-      // App in background → OS notification
-      reg.showNotification('🛵 Your order is on its way!', {
-        body: `${restaurantName} is preparing your order — it'll be with you shortly.`,
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
-        tag: 'order-update',
-        renotify: true,
-        vibrate: [200, 100, 200, 100, 400],
-        data: { url: '/' },
-      })
-    } else {
-      // App in foreground → in-app toast
-      window.dispatchEvent(
-        new CustomEvent('bocas-order-notification', { detail: { restaurantName } })
-      )
-    }
-  }, 60_000)
+    // Always show the in-app toast
+    window.dispatchEvent(new CustomEvent('bocas-order-notification', { detail: { restaurantName } }))
+    // Also attempt OS notification (browser suppresses it if app is focused, that's fine)
+    reg.showNotification(notifPayload.title, notifPayload).catch(() => {})
+  }, NOTIF_DELAY)
+
+  // ② SW backup timer — fires if the SW stays alive while app is backgrounded
+  // (browser may kill the SW before 60 s, but worth trying)
+  reg.active?.postMessage({ type: 'SCHEDULE_ORDER_NOTIFICATION', delay: NOTIF_DELAY, ...notifPayload })
 }
 
 export default function OrderConfirmation({ restaurantName, onDone }) {

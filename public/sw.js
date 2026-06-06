@@ -28,6 +28,15 @@ self.addEventListener('fetch', (e) => {
   )
 })
 
+// Backup timer for when the app is backgrounded
+self.addEventListener('message', (e) => {
+  if (e.data?.type !== 'SCHEDULE_ORDER_NOTIFICATION') return
+  const { delay, title, body, icon, badge, tag, vibrate, data } = e.data
+  setTimeout(() => {
+    self.registration.showNotification(title, { body, icon, badge, tag, vibrate, data, renotify: true })
+  }, delay)
+})
+
 self.addEventListener('notificationclick', (e) => {
   e.notification.close()
   e.waitUntil(
