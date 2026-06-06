@@ -1,6 +1,14 @@
 'use client'
 import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
 import { computeStatus } from '@/lib/order-store'
+
+const StaticMapView = dynamic(() => import('./StaticMapView'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full rounded-2xl animate-pulse" style={{ height: 180, backgroundColor: '#F3F4F6' }} />
+  ),
+})
 
 function Row({ label, value, accent }) {
   return (
@@ -121,17 +129,18 @@ export default function OrderDetailSheet({ order, onClose }) {
 
           {/* Customer info */}
           <Section title="Delivery info">
-            <div className="rounded-2xl px-4 py-1" style={{ backgroundColor: '#F9FAFB' }}>
+            <div className="rounded-2xl px-4 py-1 mb-3" style={{ backgroundColor: '#F9FAFB' }}>
               {order.customer?.name && <Row label="👤 Name" value={order.customer.name} />}
               {order.customer?.phone && <Row label="📞 Phone" value={`+${order.customer.phone}`} />}
               {order.customer?.address && <Row label="📝 Notes" value={order.customer.address} />}
-              {order.customer?.location && (
-                <Row
-                  label="📍 Pin"
-                  value={`${order.customer.location.lat.toFixed(4)}, ${order.customer.location.lng.toFixed(4)}`}
-                />
-              )}
             </div>
+            {order.customer?.location && (
+              <StaticMapView
+                lat={order.customer.location.lat}
+                lng={order.customer.location.lng}
+                height={180}
+              />
+            )}
           </Section>
         </div>
       </motion.div>
