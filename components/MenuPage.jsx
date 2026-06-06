@@ -61,7 +61,7 @@ export default function MenuPage({ restaurant }) {
           <div className="flex-1 min-w-0">
             <h1
               className="text-xl font-bold text-gray-900 leading-snug"
-              style={{ fontFamily: 'var(--font-playfair), serif' }}
+              style={{ fontFamily: 'var(--font-poppins), sans-serif' }}
             >
               {restaurant.emoji} {restaurant.name}
             </h1>

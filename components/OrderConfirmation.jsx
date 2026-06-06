@@ -177,7 +177,7 @@ export default function OrderConfirmation({ restaurantName, onDone }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 22, delay: 0.35 }}
         className="text-5xl font-bold text-white mb-2"
-        style={{ fontFamily: 'var(--font-playfair), serif' }}
+        style={{ fontFamily: 'var(--font-poppins), sans-serif' }}
       >
         ¡Listo!
       </motion.h1>

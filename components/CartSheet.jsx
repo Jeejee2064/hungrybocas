@@ -81,7 +81,7 @@ export default function CartSheet() {
                 <div>
                   <h2
                     className="text-xl font-bold text-gray-900"
-                    style={{ fontFamily: 'var(--font-playfair), serif' }}
+                    style={{ fontFamily: 'var(--font-poppins), sans-serif' }}
                   >
                     Your Cart
                   </h2>

@@ -67,7 +67,7 @@ export default function OrderDetailSheet({ order, onClose }) {
         {/* Header */}
         <div className="px-6 pt-3 pb-4 shrink-0 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-playfair), serif' }}>
+            <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
               Order details
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">{order.restaurantName} · {date} at {time}</p>

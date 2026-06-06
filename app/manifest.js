@@ -1,8 +1,8 @@
 export default function manifest() {
   return {
     id: '/',
-    name: 'Bocas Delivery',
-    short_name: 'Bocas',
+    name: 'Hungry Bocas',
+    short_name: 'Hungry Bocas',
     description: 'Order food in Bocas del Toro, Panama',
     start_url: '/',
     display: 'standalone',

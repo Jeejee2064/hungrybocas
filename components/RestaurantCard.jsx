@@ -90,7 +90,7 @@ export default function RestaurantCard({ restaurant, index }) {
 
             <h3
               className="text-xl font-bold text-gray-900 leading-snug mb-1.5"
-              style={{ fontFamily: 'var(--font-playfair), serif' }}
+              style={{ fontFamily: 'var(--font-poppins), sans-serif' }}
             >
               {restaurant.name}
             </h3>

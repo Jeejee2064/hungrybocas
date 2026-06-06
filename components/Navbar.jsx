@@ -31,7 +31,7 @@ export default function Navbar() {
         <motion.div whileHover={{ rotate: -8, scale: 1.05 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }}>
           <Image
             src="/icon-192.png"
-            alt="Bocas Delivery"
+            alt="Hungry Bocas"
             width={36}
             height={36}
             className="rounded-none"
@@ -41,9 +41,9 @@ export default function Navbar() {
         <div className="hidden sm:block">
           <span
             className="text-white font-bold text-base leading-none block"
-            style={{ fontFamily: 'var(--font-playfair), serif' }}
+            style={{ fontFamily: 'var(--font-poppins), sans-serif' }}
           >
-            Bocas Delivery
+            Hungry Bocas
           </span>
           <span className="text-xs leading-none mt-0.5 block" style={{ color: '#FFD93D' }}>
             Bocas del Toro 🇵🇦

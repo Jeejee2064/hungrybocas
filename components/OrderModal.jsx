@@ -112,7 +112,7 @@ export default function OrderModal({ restaurantName, onClose, onSuccess }) {
         {/* Header */}
         <div className="px-6 pt-4 pb-3 flex items-center justify-between shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-playfair), serif' }}>
+            <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
               Place Order
             </h2>
             {restaurantName && <p className="text-xs text-gray-400 mt-0.5">{restaurantName}</p>}

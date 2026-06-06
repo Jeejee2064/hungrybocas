@@ -69,7 +69,7 @@ export default function PWAInstallBanner() {
           >
             <Image
               src="/icon-192.png"
-              alt="Bocas Delivery"
+              alt="Hungry Bocas"
               width={44}
               height={44}
               className="rounded-xl shrink-0"
@@ -77,7 +77,7 @@ export default function PWAInstallBanner() {
 
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-900 text-sm leading-snug">
-                Install Bocas Delivery
+                Install Hungry Bocas
               </p>
               {isIOS ? (
                 <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">

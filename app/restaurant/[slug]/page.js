@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params
   const restaurant = getRestaurantBySlug(slug)
   if (!restaurant) return {}
-  return { title: `${restaurant.name} — Bocas Delivery` }
+  return { title: `${restaurant.name} — Hungry Bocas` }
 }
 
 export default async function RestaurantPage({ params }) {
