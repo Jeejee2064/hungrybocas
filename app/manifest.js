@@ -7,7 +7,7 @@ export default function manifest() {
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#FAFAF8',
+    background_color: '#1e1b4b',
     theme_color: '#1e1b4b',
     categories: ['food', 'lifestyle'],
     icons: [

@@ -32,6 +32,7 @@ export default function CartSheet() {
       restaurantName: state.restaurantName,
       restaurantId: state.restaurantId,
       items: state.items,
+      deliveryFee: state.deliveryFee,
       total: state.items.reduce((s, i) => s + i.price * i.qty, 0) + state.deliveryFee,
       customer: customerData,
     })

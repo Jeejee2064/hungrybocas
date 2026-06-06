@@ -56,23 +56,26 @@ export default function LocationPicker({ onLocationChange, error }) {
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl text-center h-full"
-        style={{ backgroundColor: '#F0FDF4', border: '1.5px solid #86EFAC', minHeight: 160 }}
+        className="flex flex-col gap-3 h-full"
+        style={{ minHeight: 160 }}
       >
-        <span className="text-4xl">📍</span>
-        <div>
-          <p className="font-semibold text-sm" style={{ color: '#166534' }}>Location detected!</p>
-          <p className="text-xs text-gray-400 mt-1">
-            {gpsLoc.lat.toFixed(5)}, {gpsLoc.lng.toFixed(5)}
-          </p>
-        </div>
-        <button
-          onClick={resetToChoice}
-          className="text-xs underline mt-1"
-          style={{ color: '#9CA3AF' }}
+        <div
+          className="flex items-center gap-3 p-4 rounded-2xl"
+          style={{ backgroundColor: '#F0FDF4', border: '1.5px solid #86EFAC' }}
         >
-          Change location
-        </button>
+          <span className="text-3xl shrink-0">📍</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm" style={{ color: '#166534' }}>Location detected!</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {gpsLoc.lat.toFixed(5)}, {gpsLoc.lng.toFixed(5)}
+            </p>
+          </div>
+        </div>
+        <SwitchButton
+          emoji="🗺"
+          label="Pin on map instead"
+          onClick={() => { setMode('map'); setGpsLoc(null); onLocationChange(null) }}
+        />
       </motion.div>
     )
   }
@@ -86,12 +89,15 @@ export default function LocationPicker({ onLocationChange, error }) {
             <span>⚠</span> {gpsError}
           </motion.p>
         )}
+        <SwitchButton
+          emoji={loading ? '⌛' : '📡'}
+          label={loading ? 'Detecting…' : 'Use my location instead'}
+          disabled={loading}
+          onClick={handleGPS}
+        />
         <div className="flex-1" style={{ minHeight: 240 }}>
           <MapPicker onLocationChange={handleMapChange} />
         </div>
-        <button onClick={resetToChoice} className="text-xs text-center underline" style={{ color: '#9CA3AF' }}>
-          ← Back
-        </button>
       </div>
     )
   }
@@ -119,6 +125,26 @@ export default function LocationPicker({ onLocationChange, error }) {
         onClick={() => setMode('map')}
       />
     </div>
+  )
+}
+
+function SwitchButton({ emoji, label, onClick, disabled }) {
+  return (
+    <motion.button
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      disabled={disabled}
+      className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm font-medium shrink-0"
+      style={{
+        backgroundColor: '#F3F4F6',
+        color: '#6B7280',
+        opacity: disabled ? 0.6 : 1,
+        cursor: disabled ? 'default' : 'pointer',
+      }}
+    >
+      <span>{emoji}</span>
+      <span>{label}</span>
+    </motion.button>
   )
 }
 
